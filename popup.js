@@ -15,7 +15,7 @@ function markdownToHtml(text) {
   return sanitized;
 }
 
-const GEMINI_API_KEY = "AIzaSyBz_zXVwbp-iFcIivyFZb80SA5cRVyFqOs"; 
+const GEMINI_API_KEY = ""; 
 const summarizeBtn = document.getElementById("summarize-btn");
 
 document.addEventListener('DOMContentLoaded', () => {
