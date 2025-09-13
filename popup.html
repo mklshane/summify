@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Summify - Minimal Summary Generator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      body {
+        background-color: #fafafa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        padding: 20px;
+        color: #171717;
+        min-width: 500px;
+      }
+
+      .popup-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05),
+          0 10px 30px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 500px;
+        overflow: hidden;
+      }
+
+      .popup-header {
+        background-color: white;
+        color: #171717;
+        padding: 24px 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .popup-header h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        letter-spacing: -0.01em;
+      }
+
+      .popup-header p {
+        font-size: 14px;
+        color: #737373;
+      }
+
+      .popup-body {
+        padding: 24px;
+      }
+
+      .options-section {
+        margin-bottom: 24px;
+      }
+
+      .options-section label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 500;
+        color: #171717;
+        font-size: 14px;
+      }
+
+      .summary-select {
+        width: 100%;
+        padding: 10px 12px;
+        background-color: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #404040;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23404040' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .summary-select:hover {
+        border-color: #d4d4d4;
+      }
+
+      .summary-select:focus {
+        outline: none;
+        border-color: #171717;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .action-btn {
+        flex: 1;
+        padding: 10px 16px;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 14px;
+      }
+
+      .summarize-btn {
+        background-color: #171717;
+        color: white;
+      }
+
+      .summarize-btn:hover {
+        background-color: #000000;
+        border-color: #000000;
+      }
+
+      .summarize-btn:active {
+        background-color: #000000;
+        border-color: #000000;
+      }
+
+      .copy-btn {
+        background-color: white;
+        color: #171717;
+      }
+
+      .copy-btn:hover {
+        background-color: #171717;
+        color: white;
+        border-color: #171717;
+      }
+
+      .copy-btn:active {
+        background-color: #000000;
+        border-color: #000000;
+      }
+
+      .result-section {
+        background-color: #fafafa;
+        border-radius: 6px;
+        padding: 16px;
+        min-height: 160px;
+        border: 1px solid #e5e5e5;
+      }
+
+      .result-section h3 {
+        font-size: 14px;
+        color: #737373;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+
+      .summary-result {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #171717;
+      }
+
+      .placeholder {
+        color: #a3a3a3;
+        font-style: italic;
+      }
+
+      .notification {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #171717;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: all 0.3s;
+        z-index: 1000;
+        font-size: 14px;
+      }
+
+      .notification.show {
+        opacity: 1;
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #4776e6;
+      }
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #4776e6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .popup-container {
+          max-width: 100%;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .popup-header {
+          padding: 20px 20px 16px;
+        }
+
+        .popup-body {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup-container">
+      <div class="popup-header">
+        <h1>Summify</h1>
+      </div>
+
+      <div class="popup-body">
+        <div class="options-section">
+          <label for="summary-type">Summary Type</label>
+          <select id="summary-type" class="summary-select">
+            <option value="brief">Brief</option>
+            <option value="detailed">Detailed</option>
+            <option value="bullets">Bullets</option>
+          </select>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn summarize-btn" id="summarize-btn">
+            Summarize
+          </button>
+          <button class="action-btn copy-btn" id="copy-btn">Copy</button>
+        </div>
+
+        <div class="result-section">
+          <h3>Summary Result</h3>
+          <div class="summary-result">
+            <p class="placeholder" id="result">
+              Select a summary type and click Summarize
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification">
+      Summary copied to clipboard
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
