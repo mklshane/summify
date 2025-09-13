@@ -1,6 +1,5 @@
 
 function markdownToHtml(text) {
-  console.log('Raw API output:', text);
 
   let sanitized = text
     .replace(/&/g, '&amp;')
@@ -119,7 +118,6 @@ document.getElementById("summarize-btn").addEventListener("click", async () => {
     }
 
     const summary = await callGeminiAPI(prompt);
-    console.log('Processed summary:', summary);
 
     chrome.storage.sync.set({
       lastSummary: summary,
