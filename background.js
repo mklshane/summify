@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.type === "GET_API_KEY") {
-    const GEMINI_API_KEY = "AIzaSyBz_zXVwbp-iFcIivyFZb80SA5cRVyFqOs"; 
+    const GEMINI_API_KEY = ""; 
     sendResponse({ apiKey: GEMINI_API_KEY });
     return true;
   }
