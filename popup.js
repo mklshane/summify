@@ -19,6 +19,24 @@ function markdownToHtml(text) {
 const GEMINI_API_KEY = "AIzaSyBz_zXVwbp-iFcIivyFZb80SA5cRVyFqOs"; 
 const summarizeBtn = document.getElementById("summarize-btn");
 
+document.addEventListener('DOMContentLoaded', () => {
+  chrome.storage.sync.get(['lastSummary', 'lastSummaryType'], (data) => {
+    const result = document.getElementById("result");
+    const summaryTypeSelect = document.getElementById("summary-type");
+    
+    if (data.lastSummary && data.lastSummaryType) {
+      summaryTypeSelect.value = data.lastSummaryType;
+      
+      if (data.lastSummaryType === "bullets") {
+        result.innerHTML = markdownToHtml(data.lastSummary).replace(/\n/g, "<br>");
+      } else {
+        result.innerHTML = markdownToHtml(data.lastSummary);
+      }
+      result.classList.remove("placeholder");
+    }
+  });
+});
+
 document.getElementById("summarize-btn").addEventListener("click", async () => {
   const result = document.getElementById("result");
   result.innerHTML =
@@ -101,7 +119,15 @@ document.getElementById("summarize-btn").addEventListener("click", async () => {
     }
 
     const summary = await callGeminiAPI(prompt);
-    console.log('Processed summary:', summary); 
+    console.log('Processed summary:', summary);
+
+    chrome.storage.sync.set({
+      lastSummary: summary,
+      lastSummaryType: summaryType
+    }, () => {
+      console.log('Summary saved to chrome.storage');
+    });
+
     if (summaryType === "bullets") {
       result.innerHTML = markdownToHtml(summary).replace(/\n/g, "<br>");
     } else {
@@ -130,7 +156,7 @@ document.getElementById("copy-btn").addEventListener("click", () => {
   }
 
   navigator.clipboard
-    .writeText(text) 
+    .writeText(text)
     .then(() => {
       showNotification("Summary copied to clipboard");
     })
